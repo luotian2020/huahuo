@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>拍摄动作参考</title>
   <style>
     :root {
@@ -42,10 +43,10 @@
       height: 100dvh;
       min-height: 0;
       margin: 0 auto;
-      padding: 34px 24px 28px;
+      padding: clamp(16px, 3vh, 34px) clamp(14px, 2vw, 28px) clamp(12px, 2.5vh, 28px);
       display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 14px;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: clamp(8px, 1.4vh, 14px);
     }
 
     .masthead {
@@ -54,7 +55,7 @@
       justify-content: space-between;
       gap: 24px;
       border-bottom: 1px solid var(--line);
-      padding-bottom: 18px;
+      padding-bottom: clamp(8px, 1.6vh, 18px);
     }
 
     .eyebrow {
@@ -98,7 +99,7 @@
       display: grid;
       place-items: center;
       background: #27231e;
-      border: 10px solid rgba(255, 251, 243, 0.88);
+      border: clamp(5px, 0.55vw, 10px) solid rgba(255, 251, 243, 0.88);
       box-shadow: 0 22px 50px rgba(69, 50, 26, 0.2);
     }
 
@@ -111,16 +112,13 @@
       z-index: 1;
     }
 
-    #main-image {
-      width: auto;
-      height: auto;
-      max-width: 86%;
-      max-height: 86%;
-      display: block;
-      transition: opacity 180ms ease, transform 180ms ease;
+    .image-stage {
+      position: absolute;
+      inset: clamp(10px, 2.5vw, 36px);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
     }
-
-    #main-image.is-changing { opacity: 0.2; transform: scale(0.985); }
 
     .filename {
       position: absolute;
@@ -201,11 +199,15 @@
 
     .filmstrip {
       display: grid;
-      grid-template-columns: repeat(23, minmax(88px, 1fr));
-      gap: 9px;
+      grid-auto-flow: column;
+      grid-auto-columns: clamp(64px, 5vw, 88px);
+      gap: clamp(5px, 0.55vw, 9px);
       overflow-x: auto;
-      padding: 4px 2px 12px;
+      padding: 4px 2px clamp(5px, 1vh, 12px);
       scrollbar-color: var(--accent) transparent;
+      scroll-snap-type: x proximity;
+      overscroll-behavior-inline: contain;
+      touch-action: pan-x;
     }
 
     .thumb {
@@ -219,6 +221,7 @@
       border: 2px solid transparent;
       border-radius: 3px;
       transition: border-color 160ms ease, transform 160ms ease;
+      scroll-snap-align: center;
     }
 
     .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -260,13 +263,12 @@
 
     .lightbox[hidden] { display: none; }
 
-    .lightbox-image {
-      width: auto;
-      height: auto;
-      max-width: calc(100vw - 150px);
-      max-height: calc(100vh - 70px);
-      object-fit: contain;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
+    .lightbox-stage {
+      position: absolute;
+      inset: 18px 72px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
     }
 
     .lightbox-meta {
@@ -343,23 +345,279 @@
     }
 
     @media (max-width: 680px) {
-      .page { width: 100%; padding: 22px 12px 18px; gap: 12px; }
-      .masthead { align-items: start; padding-bottom: 14px; }
-      .counter { padding-top: 5px; font-size: 0.9rem; }
-      .frame { border-width: 6px; }
-      .controls { padding: 0 8px; }
-      .control { width: 44px; height: 44px; font-size: 1.8rem; }
-      .filmstrip { grid-template-columns: repeat(23, 68px); gap: 7px; }
-      .hint { font-size: 0.8rem; }
-      .zoom-button, .mark-button { top: 8px; padding: 6px 11px; }
-      .zoom-button { right: 8px; }
-      .mark-button { right: 70px; }
-      .lightbox-image { max-width: calc(100vw - 72px); max-height: calc(100vh - 70px); }
-      .lightbox-controls { padding: 0 8px; }
+      .page {
+        width: 100%;
+        padding: max(10px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+        gap: 8px;
+      }
+      .masthead { align-items: center; gap: 8px; padding-bottom: 8px; }
+      .eyebrow { display: none; }
+      h1 { font-size: clamp(1.3rem, 6vw, 1.75rem); letter-spacing: 0.03em; white-space: nowrap; }
+      .counter { padding: 0; font-size: 0.75rem; }
+      .counter strong { font-size: 1.15em; }
+      .frame { border-width: 4px; }
+      .image-stage { inset: 8px; }
+      .controls { padding: 0 4px; }
+      .control { width: 40px; height: 40px; font-size: 1.65rem; }
+      .filename { right: 6px; bottom: 5px; padding: 3px 6px; font-size: 0.68rem; }
+      .filmstrip { grid-template-columns: repeat(23, 56px); gap: 5px; padding: 3px 2px 5px; }
+      .thumb span { padding: 3px; font-size: 0.62rem; }
+      .thumb.is-complete::after { width: 18px; height: 18px; font-size: 0.72rem; }
+      .hint { display: none; }
+      .zoom-button, .mark-button { top: 6px; padding: 5px 9px; font-size: 0.78rem; }
+      .zoom-button { right: 6px; }
+      .mark-button { right: 60px; }
+      .lightbox-stage { inset: 56px 8px 72px; }
+      .lightbox-controls { inset: auto 0 max(14px, env(safe-area-inset-bottom)); justify-content: center; gap: 18px; padding: 0; }
       .lightbox-control { width: 44px; height: 44px; font-size: 1.8rem; }
-      .lightbox-meta { top: 14px; left: 14px; font-size: 0.82rem; }
-      .lightbox-close { top: 10px; right: 10px; width: 40px; height: 40px; }
-      .lightbox-mark { top: 13px; right: 62px; padding: 6px 10px; }
+      .lightbox-meta { top: max(14px, env(safe-area-inset-top)); left: 12px; font-size: 0.78rem; }
+      #lightbox-filename { display: none; }
+      .lightbox-close { top: max(8px, env(safe-area-inset-top)); right: 8px; width: 38px; height: 38px; }
+      .lightbox-mark { top: max(10px, env(safe-area-inset-top)); right: 56px; padding: 6px 10px; font-size: 0.8rem; }
+    }
+
+    @media (max-width: 900px) and (max-height: 500px) {
+      .page { padding: 6px 10px; gap: 5px; }
+      .masthead { align-items: center; padding-bottom: 4px; }
+      .eyebrow { display: none; }
+      h1 { font-size: 1.15rem; letter-spacing: 0.03em; white-space: nowrap; }
+      .counter { padding: 0; font-size: 0.72rem; }
+      .frame { border-width: 3px; }
+      .image-stage { inset: 6px; }
+      .filmstrip { grid-template-columns: repeat(23, 46px); gap: 4px; padding: 2px; }
+      .hint { display: none; }
+      .zoom-button, .mark-button { top: 4px; padding: 4px 8px; font-size: 0.72rem; }
+      .zoom-button { right: 4px; }
+      .mark-button { right: 54px; }
+      .lightbox-stage { inset: 8px 66px; }
+      .lightbox-controls { inset: 0; justify-content: space-between; padding: 0 8px; }
+      .lightbox-meta { top: 8px; left: 10px; }
+      .lightbox-close { top: 6px; right: 6px; }
+      .lightbox-mark { top: 8px; right: 52px; }
+    }
+
+    .mobile-page { display: none; }
+
+    @media (max-width: 1024px), (max-width: 1366px) and (hover: none) and (pointer: coarse), (max-width: 900px) and (max-height: 500px) {
+      .page { display: none; }
+
+      .mobile-page {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) clamp(60px, 16vw, 84px);
+        gap: clamp(5px, 1.2vw, 10px);
+        padding: max(clamp(7px, 1.8vw, 14px), env(safe-area-inset-top)) clamp(7px, 1.8vw, 14px) max(clamp(6px, 1.5vw, 12px), env(safe-area-inset-bottom));
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 90% 0%, rgba(232, 182, 64, 0.3), transparent 16rem),
+          linear-gradient(145deg, #eee4d3, #f7f1e7);
+      }
+
+      .mobile-header {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 4px 3px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .mobile-title {
+        margin: 0;
+        overflow: hidden;
+        font-size: clamp(1.1rem, 5.5vw, 1.45rem);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        line-height: 1.1;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .mobile-title em { color: var(--accent); font-style: normal; }
+
+      .mobile-counter {
+        flex: none;
+        margin: 0;
+        color: var(--muted);
+        font-family: Georgia, serif;
+        font-size: 0.82rem;
+      }
+
+      .mobile-counter strong { color: var(--ink); font-size: 1.25em; }
+
+      .mobile-viewer {
+        position: relative;
+        min-height: 0;
+        overflow: hidden;
+        background: #211e1a;
+        border: clamp(3px, 0.7vw, 6px) solid rgba(255, 251, 243, 0.9);
+        box-shadow: 0 10px 28px rgba(69, 50, 26, 0.2);
+      }
+
+      .mobile-image {
+        position: absolute;
+        inset: clamp(5px, 1.5vw, 14px);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
+
+      .mobile-nav {
+        position: absolute;
+        z-index: 3;
+        top: 50%;
+        width: clamp(38px, 10vw, 54px);
+        height: auto;
+        aspect-ratio: 1;
+        cursor: pointer;
+        color: var(--ink);
+        background: rgba(255, 252, 245, 0.88);
+        border: 1px solid rgba(25, 21, 17, 0.18);
+        border-radius: 50%;
+        font-family: Georgia, serif;
+        font-size: clamp(1.45rem, 4.8vw, 2rem);
+        line-height: 1;
+        transform: translateY(-50%);
+      }
+
+      .mobile-previous { left: clamp(5px, 1.3vw, 10px); }
+      .mobile-next { right: clamp(5px, 1.3vw, 10px); }
+
+      .mobile-actions {
+        position: absolute;
+        z-index: 4;
+        top: clamp(6px, 1.4vw, 11px);
+        right: clamp(6px, 1.4vw, 11px);
+        display: flex;
+        gap: clamp(5px, 1vw, 8px);
+      }
+
+      .mobile-action {
+        cursor: pointer;
+        padding: clamp(5px, 1vw, 8px) clamp(9px, 1.8vw, 14px);
+        color: #fffdf8;
+        background: rgba(25, 21, 17, 0.74);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+        font-size: clamp(0.74rem, 1.8vw, 0.92rem);
+      }
+
+      .mobile-action.is-complete { background: #287653; }
+
+      .mobile-filename {
+        position: absolute;
+        z-index: 2;
+        right: 7px;
+        bottom: 6px;
+        max-width: calc(100% - 14px);
+        overflow: hidden;
+        margin: 0;
+        padding: 3px 6px;
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(25, 21, 17, 0.68);
+        font-family: Georgia, serif;
+        font-size: 0.66rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .mobile-filmstrip {
+        min-width: 0;
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 4px 3px;
+        background: rgba(255, 251, 243, 0.65);
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        overscroll-behavior-inline: contain;
+        touch-action: pan-x;
+      }
+
+      .mobile-filmstrip .thumb {
+        flex: 0 0 auto;
+        width: auto;
+        height: 100%;
+        aspect-ratio: 1;
+        scroll-snap-align: center;
+      }
+
+      .mobile-filmstrip .thumb:hover { transform: none; }
+    }
+
+    @media (min-width: 701px) and (max-width: 1024px) and (min-height: 501px),
+           (min-width: 1025px) and (max-width: 1366px) and (min-height: 701px) and (hover: none) and (pointer: coarse) {
+      .mobile-page {
+        grid-template-rows: auto minmax(0, 1fr) clamp(72px, 9vw, 92px);
+        gap: clamp(8px, 1vw, 12px);
+        padding: max(clamp(12px, 1.4vw, 18px), env(safe-area-inset-top)) clamp(12px, 1.4vw, 18px) max(clamp(10px, 1.2vw, 16px), env(safe-area-inset-bottom));
+      }
+
+      .mobile-header { padding: 6px 5px 11px; }
+      .mobile-title { font-size: clamp(1.5rem, 3.4vw, 2rem); }
+      .mobile-counter { font-size: 1rem; }
+      .mobile-viewer { border-width: clamp(4px, 0.55vw, 7px); }
+      .mobile-image { inset: clamp(10px, 1.4vw, 18px); }
+      .mobile-nav { width: clamp(48px, 5.2vw, 62px); height: auto; font-size: clamp(1.8rem, 2.5vw, 2.2rem); }
+      .mobile-previous { left: clamp(8px, 1vw, 14px); }
+      .mobile-next { right: clamp(8px, 1vw, 14px); }
+      .mobile-actions { top: 11px; right: 11px; gap: 8px; }
+      .mobile-action { padding: 8px 14px; font-size: 0.92rem; }
+      .mobile-filename { right: 11px; bottom: 9px; padding: 5px 8px; font-size: 0.78rem; }
+      .mobile-filmstrip { gap: 8px; padding: 6px 5px; }
+      .mobile-filmstrip .thumb { flex: 0 0 auto; width: auto; height: 100%; }
+      .mobile-filmstrip .thumb span { font-size: 0.72rem; }
+      .mobile-filmstrip .thumb.is-complete::after { width: 22px; height: 22px; font-size: 0.82rem; }
+      .lightbox-stage { inset: 72px 82px 32px; }
+      .lightbox-control { width: 58px; height: 58px; }
+    }
+
+    @media (max-width: 900px) and (max-height: 500px) {
+      .mobile-page { grid-template-rows: auto minmax(0, 1fr) clamp(46px, 13vh, 58px); padding: clamp(4px, 1vh, 7px) clamp(6px, 1vw, 10px); gap: clamp(3px, 0.8vh, 5px); }
+      .mobile-header { padding: 1px 2px 4px; }
+      .mobile-title { font-size: 1rem; }
+      .mobile-viewer { border-width: 3px; }
+      .mobile-image { inset: 5px; }
+      .mobile-filmstrip .thumb { flex: 0 0 auto; width: auto; height: 100%; }
+      .mobile-nav { width: clamp(34px, 7vh, 40px); height: auto; font-size: clamp(1.3rem, 4vh, 1.55rem); }
+      .mobile-action { padding: 4px 8px; font-size: 0.7rem; }
+    }
+
+    @media (min-width: 701px) and (max-width: 1200px) {
+      .page { padding: 16px 14px 12px; gap: 9px; }
+      .masthead { padding-bottom: 10px; }
+      .eyebrow { margin-bottom: 3px; font-size: 0.68rem; }
+      h1 { font-size: clamp(1.7rem, 4.4vw, 3rem); }
+      .counter { font-size: 0.92rem; }
+      .frame { border-width: 6px; }
+      .image-stage { inset: 14px; }
+      .control { width: 46px; height: 46px; font-size: 1.9rem; }
+      .controls { padding: 0 8px; }
+      .filmstrip { grid-auto-columns: 66px; gap: 6px; padding-bottom: 5px; }
+      .hint { font-size: 0.78rem; }
+      .zoom-button, .mark-button { top: 8px; padding: 6px 11px; font-size: 0.82rem; }
+      .zoom-button { right: 8px; }
+      .mark-button { right: 72px; }
+    }
+
+    @media (min-width: 701px) and (max-height: 700px) {
+      .page { padding: 8px 12px 6px; gap: 5px; }
+      .masthead { align-items: center; padding-bottom: 5px; }
+      .eyebrow { display: none; }
+      h1 { font-size: clamp(1.35rem, 3vw, 2rem); line-height: 1.05; }
+      .counter { font-size: 0.78rem; }
+      .frame { border-width: 4px; }
+      .image-stage { inset: 7px; }
+      .control { width: 40px; height: 40px; font-size: 1.65rem; }
+      .filmstrip { grid-auto-columns: 50px; gap: 4px; padding: 2px; }
+      .hint { display: none; }
+      .filename { right: 6px; bottom: 5px; padding: 3px 6px; font-size: 0.7rem; }
+      .zoom-button, .mark-button { top: 5px; padding: 4px 9px; font-size: 0.74rem; }
+      .zoom-button { right: 5px; }
+      .mark-button { right: 60px; }
     }
   </style>
 </head>
@@ -375,7 +633,7 @@
 
     <section class="viewer" aria-label="动作参考图片浏览器">
       <div class="frame">
-        <img id="main-image" src="pic/0-1%20(1).png" alt="花火动作参考图 0-1 (1).png">
+        <div class="image-stage" id="main-image" role="img" aria-label="花火动作参考图 0-1 (1).png"></div>
         <p id="filename" class="filename">0-1 (1).png</p>
         <button class="mark-button" id="mark-button" type="button" aria-pressed="false">标记</button>
         <button class="zoom-button" id="zoom-button" type="button" aria-haspopup="dialog" aria-expanded="false">放大</button>
@@ -392,9 +650,29 @@
     </section>
   </main>
 
+  <main class="mobile-page" aria-label="花火手机拍摄指导">
+    <header class="mobile-header">
+      <h1 class="mobile-title"><em>花火</em> · 拍摄动作参考</h1>
+      <p class="mobile-counter"><strong id="mobile-current-number">01</strong> / <span id="mobile-total-number">23</span></p>
+    </header>
+
+    <section class="mobile-viewer" aria-label="手机动作参考图片浏览器">
+      <div class="mobile-image" id="mobile-image" role="img" aria-label="花火动作参考图 0-1 (1).png"></div>
+      <div class="mobile-actions">
+        <button class="mobile-action" id="mobile-mark" type="button" aria-pressed="false">标记</button>
+        <button class="mobile-action" id="mobile-zoom" type="button" aria-haspopup="dialog" aria-expanded="false">放大</button>
+      </div>
+      <button class="mobile-nav mobile-previous" id="mobile-previous" type="button" aria-label="上一张">&#8592;</button>
+      <button class="mobile-nav mobile-next" id="mobile-next" type="button" aria-label="下一张">&#8594;</button>
+      <p class="mobile-filename" id="mobile-filename">0-1 (1).png</p>
+    </section>
+
+    <nav class="mobile-filmstrip" id="mobile-filmstrip" aria-label="手机端全部图片"></nav>
+  </main>
+
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="全屏查看花火动作参考图" hidden>
     <p class="lightbox-meta"><span id="lightbox-number">01 / 23</span> · <span id="lightbox-filename">0-1 (1).png</span></p>
-    <img class="lightbox-image" id="lightbox-image" src="pic/0-1%20(1).png" alt="花火动作参考图 0-1 (1).png">
+    <div class="lightbox-stage" id="lightbox-image" role="img" aria-label="花火动作参考图 0-1 (1).png"></div>
     <button class="lightbox-mark" id="lightbox-mark" type="button" aria-pressed="false">标记</button>
     <button class="lightbox-close" id="lightbox-close" type="button" aria-label="关闭全屏">&times;</button>
     <nav class="lightbox-controls" aria-label="全屏切换图片">
@@ -422,8 +700,19 @@
     const lightboxFilename = document.querySelector("#lightbox-filename");
     const markButton = document.querySelector("#mark-button");
     const lightboxMark = document.querySelector("#lightbox-mark");
+    const mobileImage = document.querySelector("#mobile-image");
+    const mobileCurrentNumber = document.querySelector("#mobile-current-number");
+    const mobileTotalNumber = document.querySelector("#mobile-total-number");
+    const mobileFilename = document.querySelector("#mobile-filename");
+    const mobileFilmstrip = document.querySelector("#mobile-filmstrip");
+    const mobileMark = document.querySelector("#mobile-mark");
+    const mobileZoom = document.querySelector("#mobile-zoom");
+    const mobileViewer = document.querySelector(".mobile-viewer");
     let completedImages = new Set();
     let currentIndex = 0;
+    let lightboxTrigger = zoomButton;
+    let swipeStartX = 0;
+    let swipeStartY = 0;
 
     try {
       completedImages = new Set(JSON.parse(localStorage.getItem("huahuo-completed-images") || "[]"));
@@ -432,13 +721,15 @@
     }
 
     totalNumber.textContent = images.length;
+    mobileTotalNumber.textContent = images.length;
 
-    images.forEach((imageName, index) => {
+    function createThumbnail(container, imageName, index) {
       const button = document.createElement("button");
       const image = document.createElement("img");
       const label = document.createElement("span");
       button.className = "thumb";
       button.type = "button";
+      button.dataset.index = String(index);
       button.setAttribute("aria-label", `查看第 ${index + 1} 张：${imageName}`);
       image.src = `pic/${encodeURIComponent(imageName)}`;
       image.alt = "";
@@ -446,27 +737,41 @@
       label.textContent = String(index + 1).padStart(2, "0");
       button.append(image, label);
       button.addEventListener("click", () => showImage(index));
-      filmstrip.append(button);
+      container.append(button);
+    }
+
+    images.forEach((imageName, index) => {
+      createThumbnail(filmstrip, imageName, index);
+      createThumbnail(mobileFilmstrip, imageName, index);
     });
 
     function showImage(index) {
       currentIndex = (index + images.length) % images.length;
       const imageName = images[currentIndex];
-      mainImage.classList.add("is-changing");
-      mainImage.src = `pic/${encodeURIComponent(imageName)}`;
-      mainImage.alt = `花火动作参考图 ${imageName}`;
-      lightboxImage.src = `pic/${encodeURIComponent(imageName)}`;
-      lightboxImage.alt = `花火动作参考图 ${imageName}`;
+      const imageUrl = `pic/${encodeURIComponent(imageName)}`;
+      mainImage.style.backgroundImage = `url("${imageUrl}")`;
+      mainImage.setAttribute("aria-label", `花火动作参考图 ${imageName}`);
+      mobileImage.style.backgroundImage = `url("${imageUrl}")`;
+      mobileImage.setAttribute("aria-label", `花火动作参考图 ${imageName}`);
+      lightboxImage.style.backgroundImage = `url("${imageUrl}")`;
+      lightboxImage.setAttribute("aria-label", `花火动作参考图 ${imageName}`);
       filename.textContent = imageName;
+      mobileFilename.textContent = imageName;
       currentNumber.textContent = String(currentIndex + 1).padStart(2, "0");
+      mobileCurrentNumber.textContent = String(currentIndex + 1).padStart(2, "0");
       lightboxNumber.textContent = `${String(currentIndex + 1).padStart(2, "0")} / ${images.length}`;
       lightboxFilename.textContent = imageName;
-      document.querySelectorAll(".thumb").forEach((thumb, thumbIndex) => {
+      document.querySelectorAll(".thumb").forEach((thumb) => {
+        const thumbIndex = Number(thumb.dataset.index);
         thumb.classList.toggle("is-active", thumbIndex === currentIndex);
         thumb.classList.toggle("is-complete", completedImages.has(images[thumbIndex]));
       });
       updateMarkButtons();
-      document.querySelectorAll(".thumb")[currentIndex].scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+      document.querySelectorAll(`.thumb[data-index="${currentIndex}"]`).forEach((thumb) => {
+        if (thumb.offsetParent !== null) {
+          thumb.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+        }
+      });
     }
 
     function toggleCompleted() {
@@ -480,32 +785,41 @@
         localStorage.setItem("huahuo-completed-images", JSON.stringify([...completedImages]));
       } catch (error) {
       }
-      document.querySelectorAll(".thumb")[currentIndex].classList.toggle("is-complete", completedImages.has(imageName));
+      document.querySelectorAll(`.thumb[data-index="${currentIndex}"]`).forEach((thumb) => {
+        thumb.classList.toggle("is-complete", completedImages.has(imageName));
+      });
       updateMarkButtons();
     }
 
     function updateMarkButtons() {
       const isComplete = completedImages.has(images[currentIndex]);
       const label = isComplete ? "\u2713 \u5df2\u62cd\u5b8c" : "\u6807\u8bb0";
-      [markButton, lightboxMark].forEach((button) => {
+      [markButton, mobileMark, lightboxMark].forEach((button) => {
         button.textContent = label;
         button.setAttribute("aria-pressed", String(isComplete));
         button.classList.toggle("is-complete", isComplete);
       });
     }
 
-    mainImage.addEventListener("load", () => mainImage.classList.remove("is-changing"));
     document.querySelector("#previous").addEventListener("click", () => showImage(currentIndex - 1));
     document.querySelector("#next").addEventListener("click", () => showImage(currentIndex + 1));
+    document.querySelector("#mobile-previous").addEventListener("click", () => showImage(currentIndex - 1));
+    document.querySelector("#mobile-next").addEventListener("click", () => showImage(currentIndex + 1));
     document.querySelector("#lightbox-previous").addEventListener("click", () => showImage(currentIndex - 1));
     document.querySelector("#lightbox-next").addEventListener("click", () => showImage(currentIndex + 1));
     markButton.addEventListener("click", toggleCompleted);
+    mobileMark.addEventListener("click", toggleCompleted);
     lightboxMark.addEventListener("click", toggleCompleted);
-    zoomButton.addEventListener("click", () => {
+
+    function openLightbox(trigger) {
+      lightboxTrigger = trigger;
       lightbox.hidden = false;
-      zoomButton.setAttribute("aria-expanded", "true");
+      trigger.setAttribute("aria-expanded", "true");
       document.querySelector("#lightbox-close").focus();
-    });
+    }
+
+    zoomButton.addEventListener("click", () => openLightbox(zoomButton));
+    mobileZoom.addEventListener("click", () => openLightbox(mobileZoom));
     document.querySelector("#lightbox-close").addEventListener("click", closeLightbox);
     lightbox.addEventListener("click", (event) => {
       if (event.target === lightbox) closeLightbox();
@@ -514,8 +828,22 @@
     function closeLightbox() {
       lightbox.hidden = true;
       zoomButton.setAttribute("aria-expanded", "false");
-      zoomButton.focus();
+      mobileZoom.setAttribute("aria-expanded", "false");
+      lightboxTrigger.focus();
     }
+
+    mobileViewer.addEventListener("touchstart", (event) => {
+      swipeStartX = event.changedTouches[0].clientX;
+      swipeStartY = event.changedTouches[0].clientY;
+    }, { passive: true });
+
+    mobileViewer.addEventListener("touchend", (event) => {
+      const deltaX = event.changedTouches[0].clientX - swipeStartX;
+      const deltaY = event.changedTouches[0].clientY - swipeStartY;
+      if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        showImage(currentIndex + (deltaX < 0 ? 1 : -1));
+      }
+    }, { passive: true });
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && !lightbox.hidden) {
