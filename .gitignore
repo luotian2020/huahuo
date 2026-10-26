@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.vite/
+*.local
+*.log
+.env
+.env.*
+!.env.example
+toekn.txt
+alist-data/
+mysql_data/
+storage/uploads/*
+!storage/uploads/.gitkeep
+storage/data/*
+!storage/data/.gitkeep
